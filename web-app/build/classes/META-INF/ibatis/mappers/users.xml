@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="users">
+
+	<!-- 
+		신규 회원정보를 저장하는 SQL 구문 작성하기
+	 -->
+	<insert id="insertUser" parameterClass="com.sample.app.user.User">
+		insert into sample_users
+		(user_id, user_password, user_name, user_email, user_tel)
+		values
+		(#id#, #password#, #name#, #email#, #tel#)
+	</insert>
+	
+	<select id="getUserById" parameterClass="string" resultClass="com.sample.app.user.User">
+		select
+			user_id as id,
+			user_password as password,
+			user_name as name,
+			user_email as email,
+			user_tel as tel,
+			user_point as point,
+			user_enabled as enabled,
+			user_created_date as createdDate,
+			user_updated_date as updatedDate
+		from
+			sample_users
+		where
+			user_id = #value#
+	</select>
+	
+	<select id="getUserByEmail" parameterClass="string" resultClass="com.sample.app.user.User">
+		select
+			user_id as id,
+			user_password as password,
+			user_name as name,
+			user_email as email,
+			user_tel as tel,
+			user_point as point,
+			user_enabled as enabled,
+			user_created_date as createdDate,
+			user_updated_date as updatedDate
+		from
+			sample_users
+		where
+			user_email = #value#
+	</select>
+</sqlMap>
