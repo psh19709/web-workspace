@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="boards">
+	<insert id="insertBoard" parameterClass="com.sample.vo.Board">
+		insert into sample_boards
+			(board_no, board_title, board_writer, board_content, board_file_name)
+		values
+			(sample_boards_seq.nextval, #title#, #writer#, #content#, #fileName#)
+	</insert>
+	
+	<select id="getBoards" parameterClass="map" resultClass="com.sample.vo.Board">
+		select
+			board_no as no,
+			board_title as title,
+			board_writer as writer,
+			board_content as content,
+			board_read_count as readCount,
+			board_review_count as reviewCount,
+			board_deleted as deleted,
+			board_created_date as createdDate,
+			board_updated_date as updatedDate
+		from
+			(select
+				<dynamic>
+					<isEqual property="sort" compareValue="date">
+						row_number()over (order by board_no desc) row_numbers,
+	         		</isEqual>
+					<isEqual property="sort" compareValue="title">
+						row_number()over (order by board_title asc) row_numbers,
+	         		</isEqual>
+					<isEqual property="sort" compareValue="read">
+						row_number()over (order by board_read_count desc) row_numbers,
+	         		</isEqual>
+				</dynamic>
+				board_no, board_title, board_writer, board_content,
+				board_read_count, board_review_count, board_deleted, board_created_date, board_updated_date
+			from
+				sample_boards 
+			where
+				board_deleted = 'N'
+			<dynamic>	
+	         	<isNotNull property="opt">
+	         		<isEqual property="opt" compareValue="title">
+	         			 and board_title like '%' || #keyword# || '%'
+	         		</isEqual>
+	         		<isEqual property="opt" compareValue="writer">
+	         			 and board_writer like '%' || #keyword# || '%'
+	         		</isEqual>
+	         		<isEqual property="opt" compareValue="content">
+	         			 and board_content like '%' || #keyword# || '%'
+	         		</isEqual>
+	         	</isNotNull>
+     		 </dynamic>	
+      		)	
+		where
+			row_numbers between #begin# and #end#
+	</select>
+	
+	<select id="getTotalRows" resultClass="int">
+		select
+			count(*)
+		from 
+			sample_boards
+		where
+			board_deleted = 'N'
+		<dynamic>	<!-- 동적쿼리 시작 -->
+         	<isNotNull property="opt">
+         		<isEqual property="opt" compareValue="title">
+         			 and board_title like '%' || #keyword# || '%'
+         		</isEqual>
+         		<isEqual property="opt" compareValue="writer">
+         			 and board_writer like '%' || #keyword# || '%'
+         		</isEqual>
+         		<isEqual property="opt" compareValue="content">
+         			 and board_content like '%' || #keyword# || '%'
+         		</isEqual>
+         	</isNotNull>
+      </dynamic>	<!-- 동적쿼리 끝 -->
+	</select>
+	
+	<select id="getBoardByNo" parameterClass="int" resultClass="com.sample.vo.Board">
+		select
+			board_no as no,
+			board_title as title,
+			board_writer as writer,
+			board_content as content,
+			board_read_count as readCount,
+			board_review_count as reviewCount,
+			board_deleted as deleted,
+			board_created_date as createdDate,
+			board_updated_date as updatedDate,
+			board_file_name as fileName
+		from
+			sample_boards
+		where
+			board_no = #value#
+	</select>
+	
+	<update id="updateBoard" parameterClass="com.sample.vo.Board">
+		update
+			sample_boards
+		set
+			board_title = #title#,
+			board_writer = #writer#,
+			board_content = #content#,
+			board_read_count = #readCount#,
+			board_review_count = #reviewCount#,
+			board_deleted = #deleted#,
+			board_file_name = #fileName#,
+			board_updated_date = sysdate
+		where
+			board_no = #no#
+	</update>
+
+</sqlMap>
+
+
+
+
+
+
