@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap>
+	<select id="getTotalRows" resultClass="int">
+		select
+			count(*)
+		from
+			sample_books
+	</select>
+	
+	<select id="getBooks" parameterClass="map" resultClass="com.sample.vo.Book">
+      select
+         book_no as no,
+         book_title as title,
+         book_author as author,
+         book_publisher as publisher,
+         book_price as price,
+         book_discount_price as discountPrice,
+         book_stock as stock,
+         book_created_date as createdDate,
+         book_updated_date as updatedDate
+      from
+         (select 
+            row_number() over (order by book_no desc) row_numbers, 
+            book_no, book_title, book_author, book_publisher, book_price, book_discount_price,
+            book_stock, book_created_date, book_updated_date
+          from
+             sample_books)
+      where
+         row_numbers between #begin# and #end#      
+   	</select>
+	
+	<insert id="insertBook" parameterClass="com.sample.vo.Book">
+		insert into sample_books
+			(book_no, book_title, book_author, book_publisher, book_price, book_discount_price, book_stock)
+		values
+			(sample_books_seq.nextval, #title#, #author#, #publisher#, #price#, #discountPrice#, #stock#)
+	</insert>
+	
+	<delete id="deleteBookByNo" parameterClass="int">
+		delete from
+			sample_books
+		where
+			book_no = #value#
+	</delete>
+	
+	<update id="updateBook" parameterClass="com.sample.vo.Book">
+		update
+			sample_books
+		set
+			book_title = #title#,
+			book_author = #author#,
+			book_publisher = #publisher#,
+			book_price = #price#,
+			book_discount_price = #discountPrice#,
+			book_stock = #stock#,
+			book_updated_date = sysdate
+		where 
+			book_no = #no#
+	</update>
+	
+	<select id="getBookByNo" parameterClass="int" resultClass="com.sample.vo.Book">
+		select
+				book_no as no,
+				book_title as title,
+				book_author as author,
+				book_publisher as publisher,
+				book_price as price,
+				book_discount_price as discountPrice,
+				book_stock as stock,
+				book_created_date as createdDate,
+				book_updated_date as updatedDate
+			from 
+				sample_books
+			where
+				book_no = #value#
+	</select>
+</sqlMap>
+
+
+
+
+
+

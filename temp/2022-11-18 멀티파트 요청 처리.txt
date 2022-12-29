@@ -1,0 +1,84 @@
+첨부파일 업로드 하기
+1. <form /> 속성에 속성 추가하기
+	<form method="post" enctype="multipart/form-data" action="register.jsp">
+	* method=post
+		post방식의 요청만 첨부파일 업로드를 지원한다.
+	* enctype="multipart/form-data"
+		enctype은 요청메세지의 바디부에 포함되는 데이터의 인코딩 방식을 지정하는 속성이다.
+		
+		enctype="application/x-www-form-urlencoded"이다.
+		* <form />의 기본 enctype이다.
+		* 폼입력요소의 값을 url의 쿼리스트링과 같은 형식으로 변환해서 요청메세지의 바디부에 포함시킨다.
+		* 첨부파일 업로드가 없는 폼에서만 사용하는 인코딩 방식이다
+		* 요청헤더의 컨텐츠 타입이 아래와 같이 지정된다.
+			Content-Type: application/x-www-form-urlencoded
+		* 요청메세지의 바디부 예시)
+			title=연습&writer=홍길동&content=게시글 작성 연습입니다.
+
+		enctype="multipart/form-data"
+		* 첨부파일 업로드가 있는 폼에서 사용하는 인코딩 방식이다.
+		* 요청헤더의 컨텐츠 타입이 아래와 같이 지정된다.
+			Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryoPqBs89onRcKRXQd
+		* 요청메세지의 바디부 예시)
+			----WebKitFormBoundaryoPqBs89onRcKRXQd
+			Content-Disposition: form-data; name="title"
+
+			파일업로드 연습
+			----WebKitFormBoundaryoPqBs89onRcKRXQd
+			Content-Disposition: form-data; name="writer"
+
+			홍길동
+			----WebKitFormBoundaryoPqBs89onRcKRXQd
+			Content-Disposition: form-data; name="content"
+
+			파일업로드 연습입니다. 연습입니다. 연습입니다.
+			----WebKitFormBoundaryoPqBs89onRcKRXQd
+			Content-Disposition: form-data; name="attachedFile"; filename="sample.png"
+			Content-Type: image/png
+
+			이미지파일 데이터..............
+			----WebKitFormBoundaryoPqBs89onRcKRXQd
+
+2. <input type="file" /> 태그 추가하기
+		
+3. Multipart요청(첨부파일 업로드가 포함된 요청)을 처리하는 API 사용을 첨부파일을 처리하기
+	서블릿
+		jakarta.servlet.http.Part 
+		주요 메소드
+			String getContentType()
+				업로드된 첨부파일의 컨텐츠 타입을 반환한다.
+			String getSubmittedFileName()
+				업로드된 첨부파일의 이름을 반환한다.
+			InputStream getInputStream()
+				업로드된 첨부파일을 읽어오는 객체를 반환한다.
+			long getSize()
+				업로드된 첨부파일의 사이즈를 반환한다.
+		* Part는 JSP에서는 사용불가, HttpServlet을 상속받은 사용자정의 서블릿 클래스에서만 사용가능하다.
+	사용자 정의 유틸 클래스
+		com.sample.MultipartRequest
+		생성자
+			MultipartRequest(HttpServletRequest request, String directory)
+				* 요청객체와 첨부파일을 저장할 디렉토리 경로를 전달받아서 MultipartRequest 객체를 초기화한다.
+				* 요청메세지를 분석한다.
+					* 첨부파일을 지정된 디렉토리에 저장한다.
+					* 폼입력값을 분석해 놓는다.
+		주요 메소드
+			
+			String getParameter(String name)
+			String[] getParameterValues(String name)
+			String getFilename(String name)	
+	Spring framework의 MultipartFile
+		주요 메소드
+			String getContentType()
+				업로드된 첨부파일의 컨텐츠 타입을 반환한다.
+			String getOriginalFileName()
+				업로드된 첨부파일의 이름을 반환한다.
+			InputStream getInputStream()
+				업로드된 첨부파일을 읽어오는 객체를 반환한다.
+			long getSize()
+				업로드된 첨부파일의 사이즈를 반환한다.
+			boolean isEmpty()
+				업로드된 첨부파일이 없으면 true를 반환한다.
+			byte[] getBytes()
+				업로드된 첨부파일 데이터를 반환한다.
+			

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:web="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd http://xmlns.jcp.org/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="5.0">
+
+<!-- 
+	웹 어플리케이션 전체에서 사용 가능한 초기화 파라미터를 설정한다.
+	모든 서블릿/JSP/필터/리스너에서 사용가능하다.
+	</context-param /> 으로 설정한 초기화파라미터 값은 ServletContext 객체의 초기화파라미터로 저장된다.
+	
+	ServletContext는 웹 애플리케이션 프로젝트 당 하나 생성되는 객체다.
+	WAS가 켜질 때 ServletContext객체가 생성되고, WAS가 종료도리 때 SERvletContext 객체는 폐기된다.
+	ServletContext 객체는 서블릿 여러 객체 중에서 가장 오랫동안 유지되는 객체다.
+	ServletContext 객체에는 속성과 초기화 파라미터를 저장할 수 있다.
+	ServletContext 객체에 저장된 속성과 초기화 파라미터는 모든 서블릿/JSP/필터/리스너에게 공유된다.
+ -->
+	<context-param>
+		<param-name>company-name</param-name>
+		<param-value>중앙 HTA</param-value>
+	</context-param>
+ <!-- 
+     필터 배포하기
+       1. @WebFilter으로 배포하기
+         
+         @WebFilter("/*")
+         public class FirstFilter implements Filter {
+         
+         }
+      
+      2. web.xml에서 <filter>, <filter-mapping>으로 배포하기
+      
+         <filter>
+            <filter-name>별칭</filter-name>
+            <filter-class>필터클래스의 전체이름(패키지경로와 클래스명)</filter-class>
+         </filter>
+         <filter-mapping>
+            <filter-name>별칭</servlet-name>
+            <url-pattern>매핑할 URL</url-pattern>
+         </filter-mapping>
+ 	
+  -->
+  
+  <filter>
+  	<filter-name>first</filter-name>
+  	<filter-class>com.sample.filter.FirstFilter</filter-class>
+  </filter>
+  <filter>
+  	<filter-name>second</filter-name>
+  	<filter-class>com.sample.filter.SecondFilter</filter-class>
+  	<init-param>
+  		<param-name>secret-key</param-name>
+  		<param-value>1a2cb5fde675caed3</param-value>
+  	</init-param>
+  </filter>
+  
+  <filter-mapping>
+  	<filter-name>first</filter-name>
+  	<url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+  	<filter-name>second</filter-name>
+  	<url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+ <!-- 
+ 	HelloServlet을 배포하기
+ 	
+ 	1. @webServlet으로 배포하기
+ 			@webServlet("/hello")
+ 			public class HelloServlet extends HttpServlet {
+ 			
+ 			}
+ 	
+ 	2. web.xml에서<servlet>, <servlet-mapping>으로 배포하기
+ 		<servlet>
+ 			<servlet-name>별칭</servlet-name>
+ 			<servlet-class>서블릿클래스의 전체이름(패키지경로와 클래스명)</servlet-class>
+ 		</servlet>
+ 		<servlet-mapping>
+ 			<servlet-name>별칭</servlet-name>
+ 			<url-pattern>매핑할 URL</url-pattern>
+ 		</servlet-mapping>
+ 		
+ 	
+  -->	
+  
+  <!-- 
+  	/hello URL 요청이 오면 hello-servlet이라는 별칭으로 배포된 com.sample.servlet.Helloservlet을 실행한다.
+   -->
+  <servlet>
+  	<servlet-name>hello-servlet</servlet-name>
+  	<servlet-class>com.sample.servlet.HelloServlet</servlet-class>
+  	<!-- 
+  		HelloServlet에게 전달할 초기화 파라미터 값 설정하기
+  	 -->
+  	<init-param>
+  		<param-name>email</param-name>
+  		<param-value>admin@sample.com</param-value>
+  	</init-param>
+  	<init-param>
+  		<param-name>tel</param-name>
+  		<param-value>02)1234-5678</param-value>
+  	</init-param>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>hello-servlet</servlet-name>
+  	<url-pattern>/hello</url-pattern>
+  	<url-pattern>/hi</url-pattern>
+  	<url-pattern>/ye</url-pattern>
+  </servlet-mapping>
+ 
+</web-app>
